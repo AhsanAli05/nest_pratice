@@ -1,6 +1,9 @@
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { EnvironmentVariables } from './config/env.validation.js';
+
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -15,7 +18,8 @@ async function bootstrap() {
 
     logger.log('PostgreSQL connected');
 
-    const port = process.env.PORT ?? 3000;
+    const config = app.get(ConfigService<EnvironmentVariables, true>);
+    const port = config.get('PORT', { infer: true });
     await app.listen(port);
     logger.log(`Application running on http://localhost:${port}`);
   } catch (error) {
